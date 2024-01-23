@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>All Products</title>
+  <style>
+    .button-container {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+    }
+    .dropdown {
+      margin-left: 2%;
+      width: 30%;
+    }
+    .dropdown-content a {
+    color: black;
+    padding: 5px 6px;
+    text-decoration:none;
+     display: block;
+  }
+    .dropdown:hover .dropdown-content{
+      display:block;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,123,255,0.4);
+      padding: 12px 16px;
+    }
+    .search-input {
+            padding: 10px;
+            font-size: 13px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 300px;
+            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.4);
+        }
+     .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.8);
+      }
+    </style>
+</head>
+
+<body>
+  <h1 class='text-center' style="color : black;">ALL PRODUCTS</h1>
+  <div class="container">
+  <div style="display:flex;" >
+    <a style = "text-decoration: none; color: inherit; cursor: pointer;" href="/"><button id="allCategoriesLink"class="align-right-button btn btn-primary" >HOME</button></a>
+    <div class="dropdown">
+      <span class="btn btn-primary" style="height: min-content;">SELECT CATEGORY </span>
+      <div id="dd-content" class="dropdown-content"><a href="/category?id=1" style="text-decoration: none; cursor: pointer"><p>FASHION</p></a>
+        <a href="/category?id=2" style="text-decoration: none; cursor: pointer"><p>ELECTRONICS</p></a>
+          <a href="/category?id=3" style="text-decoration: none; cursor: pointer"><p>BOOKS</p></a>
+            <a href="/category?id=4" style="text-decoration: none; cursor: pointer"><p>GROCERY</p></a>
+              <a href="/category?id=5" style="text-decoration: none; cursor: pointer"><p>FURNITURE</p></a>
+              <a href="/category?id=6" style="text-decoration: none; cursor: pointer"><p>SPORTS</p></a>
+      </div>
+
+      
+    </div>
+    <form action="/search" method="get">
+      <div class="flex" style="display: flex; align-items: center; margin-left: 130%;">
+        <input type="text" name="query" class="search-input" id="searchInput" placeholder="Search..." style="margin-right: 5px;">
+        <button type="submit" id="searchButton" class="btn btn-primary" style="margin-left: 5px;">Search</button>
+      </div>  
+    </form>
+    
+    <br>
+  </div>
+    <br>
+ <br>
+    <table class='table table-light table-striped'>
+      <thead>
+        <tr class="table table-dark text-center">
+          <!-- <th>ID</th> -->
+          <th>PRODUCT ID</th>
+          <th>NAME</th>
+          <th>CATEGORY</th>
+          <th>BRAND</th>
+          <th>MRP</th>
+          <th>DICOUNTED PRICE</th>
+          <th>STOCKS REMAINING</th>
+        </tr>
+      </thead>
+      <tbody id="tbody" class="text-center">
+      </tbody>
+    </table>
+  </div>
+    <div class="button-container" id="button" style="align-items: center;">
+      <nav class="button-container pagination" id="button" >
+        <ul class="pagination">
+        <li id="prevBtn" class="page-item page-link" onclick="prevPage()"  style="cursor : pointer">PREV</li><div style="display: flex ; gap:5px" id="pageBtn"></div>
+        <li id="nextBtn" class="page-item page-link" onclick="nextPage()" style="cursor : pointer">NEXT</button>
+      </ul>
+      </nav>
+    </div>
+  
+  <script>
+    let urlParams = new URLSearchParams(window.location.search);
+    let url=window.location.pathname;
+    let pages = urlParams.get('page');
+    fetch(`/all-products/data?page=${pages}`)
+    .then(response => response.json())
+    .then(data => {
+      let tableData = "";
+      let button = "";
+      const STYLE="text-decoration: none; cursor: pointer";
+      
+      if(pages>data.len)
+      {
+        document.getElementById('tbody').innerHTML=`</tr><td colspan=10 style="text-align:center; ">You came tooooooo farrrr.... No results here</td></tr>`;
+        document.getElementById('prevBtn').disabled = true;
+        document.getElementById('nextBtn').disabled = true;
+        return;
+      }
+      
+      //table
+      data.results.map((values) => {
+        tableData += `<tr>
+            <td>${values.PRODUCT_ID}</td>
+            <td>${values.PRODUCT_NAME}</td>
+            <td>${values.CATEGORY}</td>
+            <td>${values.BRAND}</td>
+            <td>${values.MRP}</td>
+            <td>${values.DISCOUNTED_PRICE}</td>
+            <td>${values.STOCKS_REMAINING}</td></tr>`;
+      });
+
+      //Pagination Button
+      if(data.len<=10){
+        for(i=1;i<data.len;i++){
+          button+= `<a style="${STYLE}" href="/all-products?page=${i}"><li class="page-item page-link" style="cursor : pointer"">${i}</li></a>`;
+        }
+        button+= `<a style="${STYLE}" href="/all-products?page=${data.len}"><li class="page-item page-link" style="cursor : pointer">${i}</li></a>`;
+      }
+      else{
+        button+= `<a style="${STYLE}" href="all-products?page=1"><li class="page-item page-link" style="cursor : pointer">1</li></a>`;
+        let x=pages-4;
+        let y=data.len-4;
+        if(pages>=y){
+          for(i=(data.len)-7;i<=(data.len-1);i++){
+            button+= `<a style="${STYLE}" href="/all-products?page=${i}"><li class="page-item page-link" style="cursor : pointer">${i}</li></a>`;
+          }
+        }
+        else if(x>1){
+          for(let i=x;i<=x+6;i++){
+            button+= `<a style="${STYLE}" href="/all-products?page=${i}"><li class="page-item page-link" style="cursor : pointer">${i}</li></a>`;
+          } 
+        }
+        else if(x<=1){
+          for(i=2;i<9;i++){
+            button+= `<a style="${STYLE}" href="/all-products?page=${i}"><li class="page-item page-link" style="cursor : pointer">${i}</li></a>`;
+          }
+        }
+        button+= `<a style="${STYLE}" href="/all-products?page=${data.len}"><li class="page-item page-link" style="cursor : pointer">${data.len}</li></a>`;
+      }
+      
+
+      document.getElementById('pageBtn').innerHTML = button;
+      document.getElementById('tbody').innerHTML = tableData;
+      document.getElementById('prevBtn').disabled = !data.prev;
+      document.getElementById('nextBtn').disabled = !data.next;
+    })
+    .catch(error => console.error('Error fetching data:', error));
+
+    function prevPage() {
+      pages--;
+      window.location.href = `/all-products?page=${pages}`;
+    }
+
+    function nextPage() {
+      pages++;
+      window.location.href = `/all-products?page=${pages}`;
+    }
+  </script>
+</body>
+
+</html>

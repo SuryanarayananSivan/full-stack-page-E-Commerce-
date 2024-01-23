@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=yes">
+  <title class="text-center" >E-Commerce</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    table{
+      text-align: center;
+    }
+    .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+        .logo {
+            text-align: end;
+        }
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 95%;
+            padding: 20px;
+            /* display: flex; */
+            /* justify-content: space-between; */
+            align-items: center;
+        }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 class="logo">E-Commerce</h1>
+      <a href="/all-products?page=1"><button type="button" class="btn btn-primary" >All Products</button></a>
+  </div>
+    <table class="table table-light table-striped">
+      <thead class="table table-dark">
+        <tr>
+          <th>ID</th>
+          <th>CATEGORY</th>
+          <th>PRODUCT COUNT</th>
+          <th>CREATED DATE</th>
+        </tr>
+      </thead>
+      <tbody  id="tableBody">
+        <tr>
+        <th scope="row"></th>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <script>
+    fetch('/home')
+        .then(response => response.json())
+        .then(results => {
+            let row="";
+            const STYLE = "text-decoration: none; color: inherit ";
+            results.map((val)=>{
+                row +=`<tr>
+                    <td>${val.ID}</td>
+                    <td><a href="category?id=${val.ID}" style="${STYLE}" onclick = fe>${val.CATEGORY}</a></td>
+                    <td>${val.PRODUCT_COUNT}</td>
+                    <td>${val.CREATED_DATE}</td>
+                  </tr>`;
+            })
+            document.getElementById('tableBody').innerHTML=row;
+        });
+  </script>
+</body>
+</html>
